@@ -4,20 +4,21 @@ using namespace sf;
 
 int minesweeper()
 {
+    //Sets the seed for random number generation
     srand(time(0));
 
     RenderWindow app(VideoMode(400, 400), "Minesweeper!");
 
     //This is a magic number that seems to be responsilbe for the squares on the grid being 32x32?
-    int w=32;
+    int widthHeightOfTiles=32;
 
     //Non descriptive names
-    int grid[12][12]; //Only 10x10 of the 12x12 grid is being drawn, this is the underlying grid
-    int sgrid[12][12]; //This is the grid shown to the player while the game runs
+    int underlyingGrid[12][12]; //Only 10x10 of the 12x12 grid is being drawn, this is the underlying grid
+    int shownToPlayerGrid[12][12]; //This is the grid shown to the player while the game runs
 
-    Texture t; //There are many letters in this code, this doesnt need to be another one
-    t.loadFromFile("images/minesweeper/tiles.jpg");
-    Sprite s(t); //Rename with a better name
+    Texture tileTexture; //There are many letters in this code, this doesnt need to be another one
+    tileTexture.loadFromFile("images/minesweeper/tiles.jpg");
+    Sprite tileSprite(tileTexture); //Rename with a better name
 
 
     //This loop is randomly allocating where the mines go
@@ -26,9 +27,9 @@ int minesweeper()
     for (int i=1;i<=10;i++)
      for (int j=1;j<=10;j++)
       {
-        sgrid[i][j]=10;
-        if (rand()%5==0)  grid[i][j]=9;
-        else grid[i][j]=0;
+        shownToPlayerGrid[i][j]=10;
+        if (rand()%5==0)  underlyingGrid[i][j]=9;
+        else underlyingGrid[i][j]=0;
       }
 
 
@@ -39,39 +40,39 @@ int minesweeper()
      for (int j=1;j<=10;j++)
       {
         int n=0;
-        if (grid[i][j]==9) continue;
-        if (grid[i+1][j]==9) n++;
-        if (grid[i][j+1]==9) n++;
-        if (grid[i-1][j]==9) n++;
-        if (grid[i][j-1]==9) n++;
-        if (grid[i+1][j+1]==9) n++;
-        if (grid[i-1][j-1]==9) n++;
-        if (grid[i-1][j+1]==9) n++;
-        if (grid[i+1][j-1]==9) n++;
-        grid[i][j]=n;
+        if (underlyingGrid[i][j]==9) continue;
+        if (underlyingGrid[i+1][j]==9) n++;
+        if (underlyingGrid[i][j+1]==9) n++;
+        if (underlyingGrid[i-1][j]==9) n++;
+        if (underlyingGrid[i][j-1]==9) n++;
+        if (underlyingGrid[i+1][j+1]==9) n++;
+        if (underlyingGrid[i-1][j-1]==9) n++;
+        if (underlyingGrid[i-1][j+1]==9) n++;
+        if (underlyingGrid[i+1][j-1]==9) n++;
+        underlyingGrid[i][j]=n;
       }
 
     while (app.isOpen())
     {
-        Vector2i pos = Mouse::getPosition(app);
+        Vector2i mousePosition = Mouse::getPosition(app);
         //These keep a track of which square the mouse is in 
-        int x = pos.x/w;
-        int y = pos.y/w;
+        int x = mousePosition.x/ widthHeightOfTiles; 
+        int y = mousePosition.y/ widthHeightOfTiles; 
 
-        Event e;
+        Event event; 
 
         //As long as the program is listening for events....
-        while (app.pollEvent(e))
+        while (app.pollEvent(event))
         {
             //If that event is clicking the X, close the app
-            if (e.type == Event::Closed)
+            if (event.type == Event::Closed)
                 app.close();
             //If the event is a mouse click..
-            if (e.type == Event::MouseButtonPressed)
+            if (event.type == Event::MouseButtonPressed)
                 //If the event is a left click reveal the square the mouse is in 
-              if (e.key.code == Mouse::Left) sgrid[x][y]=grid[x][y];
+              if (event.key.code == Mouse::Left) shownToPlayerGrid[x][y]= underlyingGrid[x][y];
                 //Else if the mouse click is a right click, place a flag
-              else if (e.key.code == Mouse::Right) sgrid[x][y]=11;
+              else if (event.key.code == Mouse::Right) shownToPlayerGrid[x][y]=11;
         }
         //Clears the screen before drawing the game
         app.clear(Color::White);
@@ -81,12 +82,12 @@ int minesweeper()
          for (int j=1;j<=10;j++)
           {
              //If that tile has a mine on it reveal the whole board?
-           if (sgrid[x][y]==9) sgrid[i][j]=grid[i][j];
+           if (shownToPlayerGrid[x][y]==9) shownToPlayerGrid[i][j]= underlyingGrid[i][j];
            //Sets each tile to have the correct texture from the spritesheet, mine blank number etc..
-           s.setTextureRect(IntRect(sgrid[i][j]*w,0,w,w));
+           tileSprite.setTextureRect(IntRect(shownToPlayerGrid[i][j]* widthHeightOfTiles,0, widthHeightOfTiles, widthHeightOfTiles));
            //Places the sprites on the correct parts of the grid
-           s.setPosition(i*w, j*w);
-           app.draw(s);
+           tileSprite.setPosition(i* widthHeightOfTiles, j* widthHeightOfTiles);
+           app.draw(tileSprite);
           }
 
         app.display();
