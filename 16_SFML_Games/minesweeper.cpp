@@ -10,7 +10,7 @@ int minesweeper()
     RenderWindow app(VideoMode(400, 400), "Minesweeper!");
 
     //This is a magic number that seems to be responsilbe for the squares on the grid being 32x32?
-    int widthHeightOfTiles=32;
+    const int WIDTH_AND_HEIGHT_OF_TILES=32;
 
     //Non descriptive names
     int underlyingGrid[12][12]; //Only 10x10 of the 12x12 grid is being drawn, this is the underlying grid
@@ -56,8 +56,8 @@ int minesweeper()
     {
         Vector2i mousePosition = Mouse::getPosition(app);
         //These keep a track of which square the mouse is in 
-        int x = mousePosition.x/ widthHeightOfTiles; 
-        int y = mousePosition.y/ widthHeightOfTiles; 
+        int x = mousePosition.x/ WIDTH_AND_HEIGHT_OF_TILES;
+        int y = mousePosition.y/ WIDTH_AND_HEIGHT_OF_TILES;
 
         Event event; 
 
@@ -84,9 +84,9 @@ int minesweeper()
              //If that tile has a mine on it reveal the whole board?
            if (shownToPlayerGrid[x][y]==9) shownToPlayerGrid[i][j]= underlyingGrid[i][j];
            //Sets each tile to have the correct texture from the spritesheet, mine blank number etc..
-           tileSprite.setTextureRect(IntRect(shownToPlayerGrid[i][j]* widthHeightOfTiles,0, widthHeightOfTiles, widthHeightOfTiles));
+           tileSprite.setTextureRect(IntRect(shownToPlayerGrid[i][j]* WIDTH_AND_HEIGHT_OF_TILES,0, WIDTH_AND_HEIGHT_OF_TILES, WIDTH_AND_HEIGHT_OF_TILES));
            //Places the sprites on the correct parts of the grid
-           tileSprite.setPosition(i* widthHeightOfTiles, j* widthHeightOfTiles);
+           tileSprite.setPosition(i* WIDTH_AND_HEIGHT_OF_TILES, j* WIDTH_AND_HEIGHT_OF_TILES);
            app.draw(tileSprite);
           }
 
